@@ -1,14 +1,14 @@
-import React from 'react'
-import Helmet from 'react-helmet'
-import styled from 'styled-components'
-import PostListing from '../components/Posts/PostListing/PostListing'
-import SEO from '../components/Accessories/SEO/SEO'
-import config from '../../data/SiteConfig'
-import TopNavigation from '../components/Layout/Navigation/Navigation'
+import React from 'react';
+import Helmet from 'react-helmet';
+import styled from 'styled-components';
+import PostListing from '../components/Posts/PostListing/PostListing';
+import SEO from '../components/Accessories/SEO/SEO';
+import config from '../../data/SiteConfig';
+import TopNavigation from '../components/Layout/Navigation/Navigation';
 
 class Index extends React.Component {
   render() {
-    const postEdges = this.props.data.allWordpressPost.edges
+    const postEdges = this.props.data.allWordpressPost.edges;
     return (
       <HomeContainer>
         <Helmet title={config.siteTitle} />
@@ -22,9 +22,9 @@ class Index extends React.Component {
               style={{ fontSize: '1.6rem' }}
               href="https://www.justinwhall.com"
             >
-            Justin W. Hall :)
-            </a>.
-            {' '}You should follow him on{' '}
+              Justin W. Hall :)
+            </a>
+            . You should follow him on{' '}
             <a
               style={{ fontSize: '1.6rem' }}
               href="https://twitter.com/justinwhall"
@@ -36,18 +36,18 @@ class Index extends React.Component {
           <PostListing postEdges={postEdges} />
         </MainContentContainer>
       </HomeContainer>
-    )
+    );
   }
 }
 
-export default Index
+export default Index;
 
-const HomeContainer = styled.div``
+const HomeContainer = styled.div``;
 
 const Divider = styled.div`
   margin: 50px 0;
   border-bottom: 1px solid darkgray;
-`
+`;
 
 const MainContentContainer = styled.main`
   width: 600px;
@@ -67,12 +67,12 @@ const MainContentContainer = styled.main`
   pre {
     background-color: grey;
   }
-`
+`;
 
 /* eslint no-undef: "off" */
 export const pageQuery = graphql`
   query IndexQuery {
-    allWordpressPost(filter: {fields: {deploy: {eq: true}}}) {
+    allWordpressPost {
       edges {
         node {
           date
@@ -95,4 +95,4 @@ export const pageQuery = graphql`
       }
     }
   }
-`
+`;
