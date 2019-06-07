@@ -1,92 +1,88 @@
-var proxy = require('http-proxy-middleware')
+const config = require('./data/SiteConfig');
+
+const pathPrefix = config.pathPrefix === '/' ? '' : config.pathPrefix;
 
 module.exports = {
+  pathPrefix: config.pathPrefix,
   siteMetadata: {
-    title: 'Gatsby + Netlify CMS Starter',
-    description:
-      'This repo contains an example business website that is built with Gatsby, and Netlify CMS.It follows the JAMstack architecture by using Git as a single source of truth, and Netlify for continuous deployment, and CDN distribution.',
+    siteUrl: config.siteUrl + pathPrefix,
+    rssMetadata: {
+      site_url: config.siteUrl + pathPrefix,
+      feed_url: config.siteUrl + pathPrefix + config.siteRss,
+      title: config.siteTitle,
+      description: config.siteDescription,
+      image_url: `${config.siteUrl + pathPrefix}/logos/logo-512.png`,
+      author: config.userName,
+      copyright: config.copyright,
+    },
   },
   plugins: [
+    'gatsby-plugin-styled-components',
     'gatsby-plugin-react-helmet',
-    'gatsby-plugin-sass',
     {
-      // keep as first gatsby-source-filesystem plugin for gatsby image support
-      resolve: 'gatsby-source-filesystem',
+      resolve: 'gatsby-source-wordpress',
       options: {
-        path: `${__dirname}/static/img`,
-        name: 'uploads',
+        // The base url to your WP site.
+        baseUrl: 'https://chefportal.wordpress.com',
+        // baseUrl: 'wpgatsby.wtf',
+        // WP.com sites set to true, WP.org set to false
+        hostingWPCOM: false,
+        // The protocol. This can be http or https.
+        protocol: 'https',
+        // Use 'Advanced Custom Fields' Wordpress plugin
+        useACF: false,
+        auth: {},
+        // Set to true to debug endpoints on 'gatsby build'
+        verboseOutput: true,
+        excludedRoutes: [
+          '/*/*/comments',
+          '/yoast/**',
+          '/*/*/users',
+          '/*/users/me',
+          '/oembed/*',
+        ],
       },
     },
+    // {
+    //   resolve: 'gatsby-plugin-google-analytics',
+    //   options: {
+    //     trackingId: config.googleAnalyticsID,
+    //   },
+    // },
     {
-      resolve: 'gatsby-source-filesystem',
+      resolve: 'gatsby-plugin-nprogress',
       options: {
-        path: `${__dirname}/src/pages`,
-        name: 'pages',
-      },
-    },
-    {
-      resolve: 'gatsby-source-filesystem',
-      options: {
-        path: `${__dirname}/src/img`,
-        name: 'images',
+        color: config.themeColor,
       },
     },
     'gatsby-plugin-sharp',
-    'gatsby-transformer-sharp',
+    'gatsby-plugin-catch-links',
+    'gatsby-plugin-twitter',
+    'gatsby-plugin-sitemap',
     {
-      resolve: 'gatsby-transformer-remark',
+      resolve: 'gatsby-plugin-manifest',
       options: {
-        plugins: [
+        name: config.siteTitle,
+        short_name: config.siteTitle,
+        description: config.siteDescription,
+        start_url: config.pathPrefix,
+        background_color: config.backgroundColor,
+        theme_color: config.themeColor,
+        display: 'minimal-ui',
+        icons: [
           {
-            resolve: 'gatsby-remark-relative-images',
-            options: {
-              name: 'uploads',
-            },
+            src: '/logos/logo-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
           },
           {
-            resolve: 'gatsby-remark-images',
-            options: {
-              // It's important to specify the maxWidth (in pixels) of
-              // the content container as this plugin uses this as the
-              // base for generating different widths of each image.
-              maxWidth: 2048,
-            },
-          },
-          {
-            resolve: 'gatsby-remark-copy-linked-files',
-            options: {
-              destinationDir: 'static',
-            },
+            src: '/logos/logo-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
           },
         ],
       },
     },
-    {
-      resolve: 'gatsby-plugin-netlify-cms',
-      options: {
-        modulePath: `${__dirname}/src/cms/cms.js`,
-      },
-    },
-    {
-      resolve: 'gatsby-plugin-purgecss', // purges all unused/unreferenced css rules
-      options: {
-        develop: true, // Activates purging in npm run develop
-        purgeOnly: ['/all.sass'], // applies purging only on the bulma css file
-      },
-    }, // must be after other CSS plugins
-    'gatsby-plugin-netlify', // make sure to keep it last in the array
+    'gatsby-plugin-offline',
   ],
-  // for avoiding CORS while developing Netlify Functions locally
-  // read more: https://www.gatsbyjs.org/docs/api-proxy/#advanced-proxying
-  developMiddleware: app => {
-    app.use(
-      '/.netlify/functions/',
-      proxy({
-        target: 'http://localhost:9000',
-        pathRewrite: {
-          '/.netlify/functions/': '',
-        },
-      })
-    )
-  },
-}
+};
